@@ -3,6 +3,7 @@ const { AppType } = require("@prisma/client");
 
 const dealsController = {
   getDeals: async (req, res) => {
+    // TODO:: // use req.query
     const deals = await prisma.deal.findMany();
     res.json({
       message: "Successfully fetched deals",
