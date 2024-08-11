@@ -9,6 +9,31 @@ const isValidUrl = (urlString) => {
   }
 };
 
+const isNumber = (value) => {
+  return !isNaN(value);
+};
+
+const validateBody = (body) => {
+  const allowedFields = [
+    "title",
+    "description",
+    "imageUrl",
+    "url",
+    "type",
+    "priceFrom",
+    "priceTo",
+  ];
+  const extraFields = Object.keys(body).filter(
+    (field) => !allowedFields.includes(field)
+  );
+
+  if (extraFields.length > 0) {
+    return false;
+  }
+
+  return true;
+};
+
 const dealsMiddleware = {
   validateQueryParams: (req, res, next) => {
     const {
@@ -20,15 +45,24 @@ const dealsMiddleware = {
       order = "desc",
     } = req.query;
 
-    const allowedQueryParams = ['page', 'pageSize', 'type', 'isFree', 'orderBy', 'order'];
+    const allowedQueryParams = [
+      "page",
+      "pageSize",
+      "type",
+      "isFree",
+      "orderBy",
+      "order",
+    ];
     const receivedQueryParams = Object.keys(req.query);
-    
-    const invalidParams = receivedQueryParams.filter(param => !allowedQueryParams.includes(param));
-    
+
+    const invalidParams = receivedQueryParams.filter(
+      (param) => !allowedQueryParams.includes(param)
+    );
+
     if (invalidParams.length > 0) {
       return res.status(400).json({
         message: "Invalid query parameters",
-        invalidParams: invalidParams
+        invalidParams: invalidParams,
       });
     }
 
@@ -76,20 +110,7 @@ const dealsMiddleware = {
     const { title, description, imageUrl, url, type, priceFrom, priceTo } =
       req.body;
 
-    const allowedFields = [
-      "title",
-      "description",
-      "imageUrl",
-      "url",
-      "type",
-      "priceFrom",
-      "priceTo",
-    ];
-    const extraFields = Object.keys(req.body).filter(
-      (field) => !allowedFields.includes(field)
-    );
-
-    if (extraFields.length > 0) {
+    if (!validateBody(req.body)) {
       return res.status(400).json({
         message: "Invalid request body. Extra fields are not allowed.",
         invalidFields: extraFields,
@@ -120,16 +141,22 @@ const dealsMiddleware = {
       });
     }
 
-    if (imageUrl && !isValidUrl(imageUrl)) {
-      return res.status(400).json({
-        message: "Invalid image URL format",
-      });
-    }
-
     if (!Object.values(AppType).includes(type)) {
       return res.status(400).json({
         message: "Invalid type",
         validTypes: Object.values(AppType),
+      });
+    }
+
+    if (Number(priceTo) >= Number(priceFrom)) {
+      return res.status(400).json({
+        message: "PriceTo must be greater than PriceFrom",
+      });
+    }
+
+    if (imageUrl && !isValidUrl(imageUrl)) {
+      return res.status(400).json({
+        message: "Invalid image URL format",
       });
     }
 
@@ -139,9 +166,86 @@ const dealsMiddleware = {
       });
     }
 
-    if (Number(priceTo) >= Number(priceFrom)) {
+    next();
+  },
+  validateUpdateDeal: (req, res, next) => {
+    const { id } = req.params;
+    const { description, imageUrl, url, type, priceFrom, priceTo } =
+      req.body;
+
+    if (!validateBody(req.body)) {
+      return res.status(400).json({
+        message: "Invalid request body. Extra fields are not allowed.",
+        invalidFields: extraFields,
+      });
+    }
+
+    if (!id || !isUuid(id)) {
+      return res.status(400).json({
+        message: "Invalid id format",
+      });
+    }
+
+    if (priceFrom && (isNaN(priceFrom) || priceFrom < 0)) {
+      return res.status(400).json({
+        message: "Invalid priceFrom",
+      });
+    }
+
+    if (priceTo && (isNaN(priceTo) || priceTo < 0)) {
+      return res.status(400).json({
+        message: "Invalid priceTo",
+      });
+    }
+
+    if (priceFrom && priceTo && Number(priceFrom) >= Number(priceTo)) {
       return res.status(400).json({
         message: "PriceTo must be greater than PriceFrom",
+      });
+    }
+
+    if (type && !Object.values(AppType).includes(type)) {
+      return res.status(400).json({
+        message: "Invalid type",
+        validTypes: Object.values(AppType),
+      });
+    }
+
+    if (url && !isValidUrl(url)) {
+      return res.status(400).json({
+        message: "Invalid URL format",
+      });
+    }
+
+    if (imageUrl && !isValidUrl(imageUrl)) {
+      return res.status(400).json({
+        message: "Invalid image URL format",
+      });
+    }
+
+    if (description && description.length > 1000) {
+      return res.status(400).json({
+        message: "Description is too long",
+      });
+    }
+  },
+  validateDeleteDeal: (req, res, next) => {
+    const { id } = req.params;
+
+    if (!id || !isNumber(id)) {
+      return res.status(400).json({
+        message: "Invalid id format",
+      });
+    }
+
+    next();
+  },
+  validateGetDeal: (req, res, next) => {
+    const { id } = req.params;
+
+    if (!id || !isNumber(id)) {
+      return res.status(400).json({
+        message: "Invalid id format",
       });
     }
 

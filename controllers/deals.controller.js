@@ -50,14 +50,6 @@ const dealsController = {
     });
   },
   postDeals: async (req, res) => {
-    const { type, priceFrom, priceTo } = req.body;
-    if (!Object.values(AppType).includes(type)) {
-      return res.status(400).json({
-        message: "Invalid Type",
-        validTypes: Object.values(AppType),
-      });
-    }
-
     const deal = await prisma.deal.create({
       data: req.body,
     });
@@ -68,6 +60,64 @@ const dealsController = {
     };
     res.json({
       message: "Successfully posted deals",
+      data: serializedDeal,
+    });
+  },
+  deleteById: async (req, res) => {
+    const { id } = req.params;
+
+    const deal = await prisma.deal.findUnique({
+      where: { id: Number(id) },
+    });
+    if (!deal) {
+      return res.status(404).json({
+        message: "Deal not found",
+      });
+    }
+    await prisma.deal.delete({
+      where: { id: Number(id) },
+    });
+    res.json({
+      message: "Successfully deleted deal",
+    });
+  },
+  updateById: async (req, res) => {
+    const { id } = req.params;
+
+    const deal = await prisma.deal.findUnique({
+      where: { id: Number(id) },
+    });
+    if (!deal) {
+      return res.status(404).json({
+        message: "Deal not found",
+      });
+    }
+
+    await prisma.deal.update({
+      where: { id: Number(id) },
+      data: { ...deal, ...req.body },
+    });
+    res.json({
+      message: "Successfully updated deal",
+    });
+  },
+  getById: async (req, res) => {
+    const { id } = req.params;
+    const deal = await prisma.deal.findUnique({
+      where: { id: Number(id) },
+    });
+    if (!deal) {
+      return res.status(404).json({
+        message: "Deal not found",
+      });
+    }
+    const serializedDeal = {
+      ...deal,
+      priceFrom: deal.priceFrom.toString(),
+      priceTo: deal.priceTo.toString(),
+    };
+    res.json({
+      message: "Successfully fetched deal",
       data: serializedDeal,
     });
   },
