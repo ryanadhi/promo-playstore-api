@@ -58,12 +58,6 @@ const dealsController = {
       });
     }
 
-    if (priceTo >= priceFrom) {
-      return res.status(400).json({
-        message: "PriceTo must be greater than PriceFrom",
-      });
-    }
-
     const deal = await prisma.deal.create({
       data: req.body,
     });

@@ -21,6 +21,22 @@ const userController = {
   },
   postUsers: async (req, res) => {
     const { email, apiKey, appId = "1" } = req.body;
+
+    const checkUser = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email },
+          { apiKey },
+        ],
+      },
+    });
+
+    if (checkUser) {
+      return res.status(400).json({
+        message: "User already exists",
+      });
+    }
+
     const user = await prisma.user.create({
       data: {
         email,
