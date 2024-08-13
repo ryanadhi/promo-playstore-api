@@ -28,7 +28,6 @@ const dealsController = {
       select: {
         id: true,
         title: true,
-        description: true,
         imageUrl: true,
         url: true,
         type: true,
