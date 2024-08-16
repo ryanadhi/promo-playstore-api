@@ -6,7 +6,6 @@ This API is providing you with the latest promo in Google PlayStore for Indonesi
 ## How?
 Before accessing the API, you need to register and retrieve your API key. Please register [here](https://forms.gle/1xRVsgnSEkUTyJfU6).
 
-
 ## API Endpoints
 
 ### Get Deals
@@ -99,3 +98,6 @@ curl -X GET \
     }
 }
 ```
+
+- **Note:** If you encounter any issues or have any suggestions, please feel free to create an issue in the repository.
+
