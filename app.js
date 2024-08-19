@@ -4,7 +4,7 @@ const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const rateLimit = require('express-rate-limit');
 
-app.set('trust proxy', true);
+
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -18,7 +18,7 @@ const limiter = rateLimit({
 const indexRouter = require("./routes/index");
 
 const app = express();
-
+app.set('trust proxy', true);
 app.use(limiter);
 app.use(logger("dev"));
 app.use(express.json());
