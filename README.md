@@ -2,16 +2,11 @@
 
 This API is providing you with the latest promo in Google PlayStore for Indonesian🇮🇩 region.
 
-
-## How?
-Before accessing the API, you need to register and retrieve your API key. Please register [here](https://forms.gle/1xRVsgnSEkUTyJfU6).
-
 ## API Endpoints
 
 ### Get Deals
 - **Endpoint:** `/api/v1/deals`
 - **Method:** `GET`
-- **Header:** `X-API-Key: your_api_key_here`
 - **Description:** Retrieves a list of available deals.
 ### Parameters
 
@@ -28,7 +23,6 @@ Before accessing the API, you need to register and retrieve your API key. Please
 ```bash
 curl -X GET \
   http://https://promo-playstore-api.vercel.app/api/v1/deals \
-  -H 'X-API-Key: your_api_key_here'
 ```
 - **Sample Response:**
 ```json
@@ -71,14 +65,12 @@ curl -X GET \
 ### Get Deal by ID
 - **Endpoint:** `/api/v1/deals/{id}`
 - **Method:** `GET`
-- **Header:** `X-API-Key: your_api_key_here`
 - **Description:** Retrieves details of a specific deal by its ID.
 - **Sample Request:**
 
 ```bash
 curl -X GET \
   http://https://promo-playstore-api.vercel.app/api/v1/deals/1 \
-  -H 'X-API-Key: your_api_key_here'
 ```
 - **Sample Response:**
 ```json
